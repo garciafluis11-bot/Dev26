@@ -413,6 +413,27 @@ textarea { resize:vertical; min-height:70px; }
 .lib-search input{padding-left:30px;}
 .lib-search-ico{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none;}
 
+
+/* BCBA instruction hint (shown small, muted — student can't easily read from distance) */
+.bcba-instruction-hint {
+  display:inline-block;
+  margin-top:8px;
+  padding:6px 16px;
+  background:rgba(74,127,193,0.08);
+  border:1px solid rgba(74,127,193,0.2);
+  border-radius:8px;
+  font-size:0.78rem;
+  color:var(--muted);
+  font-style:italic;
+}
+.bcba-instruction-hint strong { color:var(--blue); }
+.student-cue {
+  font-size:1.5rem !important;
+  color:var(--muted) !important;
+  border-color:var(--border) !important;
+  background:#faf8f4 !important;
+}
+
 @keyframes popIn { 0%{transform:scale(1.04)}50%{transform:scale(1.08)}100%{transform:scale(1.04)} }
 @keyframes shakeCard { 0%,100%{transform:translateX(0)}25%{transform:translateX(-10px)}75%{transform:translateX(10px)} }
 @keyframes bounceIn { 0%{transform:scale(0.3);opacity:0}60%{transform:scale(1.1)}100%{transform:scale(1);opacity:1} }
@@ -1725,7 +1746,8 @@ function renderIdentTrial(){
   document.getElementById('runner-body').innerHTML=`
     <div class="instruction-banner">
       <div class="task-label">🖼️ Identification · Task ${rTaskIdx+1} · Trial ${rTrialIdx+1} of 3</div>
-      <div class="instruction-text">${task.instruction}</div>
+      <div class="instruction-text student-cue">👂 Listen, then touch the picture</div>
+      <div class="bcba-instruction-hint">BCBA says: <strong>${task.instruction}</strong></div>
     </div>
     <div class="pic-grid" id="pic-grid">
       ${items.map((item,i)=>`
@@ -1777,7 +1799,8 @@ function renderMatchTrial(){
   document.getElementById('runner-body').innerHTML=`
     <div class="instruction-banner">
       <div class="task-label">🔗 Matching · Task ${rTaskIdx+1}</div>
-      <div class="instruction-text">${task.instruction}</div>
+      <div class="instruction-text student-cue">👂 Match the picture to its word</div>
+      <div class="bcba-instruction-hint">BCBA says: <strong>${task.instruction}</strong></div>
     </div>
     <div class="match-layout">
       <div>
@@ -1860,7 +1883,8 @@ function renderSeqUI(){
   document.getElementById('runner-body').innerHTML=`
     <div class="instruction-banner">
       <div class="task-label">📋 Sequencing · Task ${rTaskIdx+1} · Trial ${rTrialIdx+1} of ${rTrials.length}</div>
-      <div class="instruction-text">${task.instruction}</div>
+      <div class="instruction-text student-cue">👂 Put the steps in order</div>
+      <div class="bcba-instruction-hint">BCBA says: <strong>${task.instruction}</strong></div>
     </div>
     <div style="display:flex;flex-direction:column;align-items:center;width:100%;max-width:560px">
       <div style="font-size:0.78rem;color:var(--muted);margin-bottom:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.07em">Tap a step below, then tap a slot to place it</div>
@@ -1869,7 +1893,7 @@ function renderSeqUI(){
           <div class="seq-slot ${slot?'filled':''} ${slot&&rSeqCorrectOrder[si]&&slot.id===rSeqCorrectOrder[si].id?'':''}  " id="slot-${si}" onclick="placeInSlot(${si})">
             <div class="seq-slot-num">${si+1}</div>
             <div class="seq-slot-content">
-              ${slot?`<div style="flex-shrink:0">${renderMedia(slot.id,slot.variantUsed||0,36)}</div><div class="seq-slot-text" style="margin-left:8px">${slot.word}</div>`:
+              ${slot?`<div style="flex-shrink:0">${renderMedia(slot.id,slot.variantUsed||0,36)}</div><div class="seq-slot-text" style="margin-left:8px;display:none">${slot.word}</div>`:
               `<div class="seq-slot-placeholder">Tap here to place step ${si+1}</div>`}
             </div>
             ${slot?`<button class="seq-slot-remove" onclick="event.stopPropagation();removeFromSlot(${si})">↩</button>`:''}
@@ -1879,8 +1903,7 @@ function renderSeqUI(){
       <div class="seq-choices" id="seq-choices">
         ${rSeqChoices.map((s,ci)=>`
           <div class="seq-choice ${rSeqSlots.find(sl=>sl&&sl.id===s.id)?'used':''} ${rSeqActiveChoice&&rSeqActiveChoice.id===s.id?'multi-selected':''}" id="choice-${ci}" onclick="selectSeqChoice(${ci},'${s.id}')">
-            <div style="flex-shrink:0">${renderMedia(s.id,s.variantUsed||0,36)}</div>
-            <div class="seq-choice-text">${s.word}</div>
+            <div style="flex-shrink:0">${renderMedia(s.id,s.variantUsed||0,48)}</div>
           </div>`).join('')}
       </div>
       ${rSeqSlots.every(s=>s!==null)?`<div style="margin-top:20px;display:flex;gap:12px"><button class="btn btn-primary" onclick="submitSeq()">✓ Check Order</button><button class="btn btn-ghost" onclick="clearSeq()">↺ Clear</button></div>`:''}
