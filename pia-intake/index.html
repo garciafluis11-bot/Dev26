@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Privacy Check</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Guided Privacy Impact Assessment intake with threshold screening, NIST Privacy Framework risk mapping, and a legal-ready Record of Processing Activities.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=IBM+Plex+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <button class="brand" type="button" data-action="home" aria-label="Privacy Check home"><span class="brand-mark" aria-hidden="true">PC</span><span id="app-name">Privacy Check</span></button>
+    <span class="topbar-title" id="topbar-title"></span>
+    <div class="topbar-actions">
+      <span class="save-state" id="save-state" aria-live="polite"></span>
+      <button class="btn btn-small btn-ghost" type="button" data-action="glossary">Glossary</button>
+    </div>
+  </div>
+</header>
+
+<div class="page"><div id="app"></div></div>
+
+<dialog id="glossary" aria-labelledby="glossary-title">
+  <div class="dialog-body">
+    <div class="dialog-head">
+      <h2 id="glossary-title">Privacy words, explained</h2>
+      <button class="btn btn-small" type="button" data-action="close-glossary">Close</button>
+    </div>
+    <label class="sr-only" for="glossary-search">Search the glossary</label>
+    <input class="input" id="glossary-search" type="search" placeholder="Search, e.g. consent">
+    <dl class="gloss-list" id="glossary-list"></dl>
+  </div>
+</dialog>
+
+<dialog id="confirm" aria-labelledby="confirm-title">
+  <div class="dialog-body">
+    <h2 id="confirm-title">Are you sure?</h2>
+    <p id="confirm-text"></p>
+    <div class="btn-row">
+      <button class="btn btn-primary" type="button" id="confirm-yes">Confirm</button>
+      <button class="btn" type="button" id="confirm-no">Cancel</button>
+    </div>
+  </div>
+</dialog>
+
+<div class="popover" id="popover" role="tooltip" hidden></div>
+<div class="toasts" id="toasts" aria-live="polite"></div>
+
+<script src="js/config.js"></script>
+<script src="js/glossary.js"></script>
+<script src="js/nist.js"></script>
+<script src="js/questions.js"></script>
+<script src="js/risks.js"></script>
+<script src="js/engine.js"></script>
+<script src="js/report.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
