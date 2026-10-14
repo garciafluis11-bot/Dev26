@@ -2750,6 +2750,10 @@ dialog::backdrop { background: rgb(10 20 24 / 45%); }
     try { localStorage.setItem(cfg.storageKey, JSON.stringify(all)); return true; } catch (e) { return false; }
   }
 
+  // Inside the claude.ai artifact viewer, files are saved through its downloads capability, and printing is unavailable.
+  var inViewer = !!(window.claude && typeof window.claude.use === 'function');
+  var hostDownloads = null;
+
   var app = { view: 'home', cur: null, step: 'about', idx: 0, errors: {}, riskIds: [], navOpen: false };
   var saveTimer = null;
 
@@ -3110,11 +3114,12 @@ dialog::backdrop { background: rgb(10 20 24 / 45%); }
     html += '<div class="report-tools panel">';
     if (outstanding) html += '<p class="unsure-note">' + outstanding + ' item' + (outstanding > 1 ? 's' : '') + ' still to confirm or answer. They\'re listed in the record so legal can see them. You can still send it.</p>';
     html += '<div class="btn-row">' +
-      '<button class="btn btn-primary" type="button" data-action="export-doc">Download for Word</button>' +
-      '<button class="btn" type="button" data-action="export-pdf">Save as PDF</button>' +
+      (inViewer ? '' : '<button class="btn btn-primary" type="button" data-action="export-doc">Download for Word</button>' +
+      '<button class="btn" type="button" data-action="export-pdf">Save as PDF</button>') +
       '<button class="btn" type="button" data-action="export-csv">Download RoPA row (CSV)</button>' +
       '<button class="btn" type="button" data-action="export-html">Download web page</button>' +
       '<button class="btn" type="button" data-action="export-json">Back up (JSON)</button></div>';
+    if (inViewer) html += '<p class="muted" style="font-size:var(--step-0)">Word and PDF exports are available when the tool runs from your own site or computer. The web page download opens in Word too.</p>';
     html += '<div class="btn-row"><button class="btn btn-small" type="button" data-action="copy-ropa">Copy RoPA table for a spreadsheet</button>' +
       '<button class="btn btn-small" type="button" data-action="copy-summary">Copy summary for an email</button></div>';
     html += '<div class="btn-row">' + (submitted
@@ -3267,6 +3272,16 @@ dialog::backdrop { background: rgb(10 20 24 / 45%); }
   function fileBase() { return E.recordId(app.cur) + '-' + slug(app.cur.answers.project_name); }
 
   function download(name, content, type) {
+    if (inViewer) {
+      if (!hostDownloads) { toast('Downloads aren\'t available here', 'Use the copy buttons instead.'); return; }
+      hostDownloads.save({ filename: name, data: content }).then(function () {
+        toast('Saved ' + name, '');
+      }, function (err) {
+        if (err && err.code === 'declined') return;
+        toast('Couldn\'t save ' + name, 'Use the copy buttons instead.');
+      });
+      return;
+    }
     try {
       var blob = new Blob([content], { type: type });
       var url = URL.createObjectURL(blob);
@@ -3569,6 +3584,9 @@ dialog::backdrop { background: rgb(10 20 24 / 45%); }
   reportStyle.textContent = R.CSS;
   document.head.appendChild(reportStyle);
   render();
+  if (inViewer) {
+    window.claude.use('downloads').then(function (d) { hostDownloads = d; }, function () { hostDownloads = null; });
+  }
 })();
 
 </script>
